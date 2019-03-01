@@ -1,38 +1,46 @@
 import matplotlib.pylab as pylab
 
-a = 1.1
+# This is LV that is spelt out in 4.34 and 4.35
+
 
 def initialize():
-    global x, y, resultx, resulty, t, timesteps
-    x = 1
-    y = 1
+    global r, d, b, c, K, x, y, resultx, resulty, t, timesteps
+    r = d = c = b = 1
+    K = 5
+    x = y = 1
     resultx = [x]
     resulty = [y]
     t = 0
     timesteps = [t]
 
+def update():
+    global r, d, b, c, x, y, K, resultx, resulty, t, timesteps
+    nextx = x + r * x * (1 - x/K) - (1 - 1/(b * y + 1)) * x
+    nexty = y - d * y + c * x * y
+    x, y = nextx, nexty
+    t = t + 0.1
+
 def observe():
+    # This function essentially records the current state of x, y and t so that 
+    # they can be plotted over time.
     global x, y, resultx, resulty, t, timesteps
     resultx.append(x)
     resulty.append(y)
     timesteps.append(t)
 
-def update():
-    # This is Lotka-Volterra with x as predator, y as prey. The populations can go below zero.
-    global x, y, resultx, resulty, t, timesteps
-    nextx = 0.5 * x + y
-    nexty = -0.5 * x + y
-    x, y = nextx, nexty
-    t = t + 0.1
-
 initialize()
-while t < 3:
+while t < 10:
     update()
     observe()
 
-pylab.plot(timesteps, resultx, 'r-')
-pylab.plot(timesteps, resulty, 'b--')
-# pylab.plot(resultx, resulty)
-pylab.show()
+fig1 = pylab.figure()
+fig2 = pylab.figure()
 
-print("Done")
+ax1 = fig1.add_subplot(111)
+ax2 = fig2.add_subplot(111)
+
+ax1.plot(timesteps, resultx, 'r-')
+ax1.plot(timesteps, resulty, 'b--')
+ax2.plot(resultx, resulty)
+
+pylab.show()
